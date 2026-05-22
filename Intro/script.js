@@ -26,4 +26,17 @@ require([
     center: [121.894019, 14.359301], // Longitude, Latitude
     zoom: 5, // Zoom level
   });
+
+  view.on("click", function (e) {
+    console.log(e);
+    console.log(e.mapPoint.latitude);
+
+    // $("#xCoords").html(`Latitude: ${e.mapPoint.latitude.toFixed(5)}`);
+    // $("#yCoords").html(`Longitude: ${e.mapPoint.longitude.toFixed(5)}`);
+    if (e.mapPoint) {
+      $("#map_coords").html(
+        `Latitude: ${e.mapPoint.latitude.toFixed(5)} Longitude: ${e.mapPoint.longitude.toFixed(5)}`,
+      );
+    }
+  });
 });

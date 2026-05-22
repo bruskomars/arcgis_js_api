@@ -1,0 +1,24 @@
+
+html,
+body,
+#viewDiv {
+    width: 100%;
+    padding:0;
+    height: 100%;
+    margin: 0;
+}
+
+#customPopup {
+    position: aboslute;
+    z-index: 1;
+    top: 0px;
+    right: 0px;
+    background-color: aqua;
+    border-radius: 5px;
+    opacity: 0.5;
+}
+
+#footer {
+    height: 75px;
+    background-color: darkgrey;
+}
