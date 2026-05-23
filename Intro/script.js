@@ -3,7 +3,9 @@ require([
   "esri/Map",
   "esri/views/MapView",
   "esri/WebMap",
-], function (esriConfig, Map, MapView, WebMap) {
+  "esri/widgets/Legend",
+  "esri/widgets/LayerList",
+], function (esriConfig, Map, MapView, WebMap, Legend, LayerList) {
   // Set your API key
   esriConfig.apiKey =
     "AAPTaJYkH5ASSLWvdKQWeQ8cs5Q..JmR5E1jJCVswiUjDOD07Wfgyesr87fOEEparDrWmYzJRv8_mIZXixUdW6w1OxvvckCGEgkPO-zZvE8B1QkYxJiSujtj3D0k2rzxDdqW1XZyV1W_cjxWl3UKfyxiNbi13vIjFxMZxZIs9AeCRiRXtxxG-yMJa6kKzD9NkU6qh9bsoyG8UwbEKJfL59DitldgFK8GT9idjo5Hj2OBB-jrWDdIq8NDQIMJCmPCy4nxlgwr8UABdhQKrPrebGBU.AT1_U02ceave";
@@ -39,4 +41,15 @@ require([
       );
     }
   });
+
+  // Legend widget
+  let legendWidget = new Legend({
+    view: view,
+  });
+
+  // add widget to view
+  view.ui.add(legendWidget, "bottom-right");
+
+  // layer list widget
+  view.ui.add(new LayerList({ view: view }), "top-right");
 });
