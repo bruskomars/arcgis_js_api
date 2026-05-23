@@ -17,7 +17,9 @@ require([
 
   const webmap = new WebMap({
     portalItem: {
-      id: "391a540d56b64375a0f76d4778d1880a",
+      // id: "391a540d56b64375a0f76d4778d1880a",
+      id: "e691172598f04ea8881cd2a4adaa45ba",
+      // id: "f701172599f04ea8781de2a4adzz46ab",
     },
   });
 
@@ -46,10 +48,28 @@ require([
   let legendWidget = new Legend({
     view: view,
   });
-
   // add widget to view
   view.ui.add(legendWidget, "bottom-right");
 
   // layer list widget
-  view.ui.add(new LayerList({ view: view }), "top-right");
+  view.ui.add(
+    new LayerList({
+      view: view,
+    }),
+    "top-right",
+  );
+
+  // getting the layername
+  view.when(() => {
+    webmap.layers.forEach((layer) => {
+      console.log(layer.title);
+      let option = document.createElement("option");
+      option.textContent = layer.title;
+      let select = document.getElementById("layerName");
+      select.appendChild(option);
+    });
+  });
+
+  let lyrList = document.getElementById("layerList");
+  view.ui.add(lyrList, "top-right");
 });
