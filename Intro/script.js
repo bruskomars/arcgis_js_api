@@ -8,6 +8,7 @@ require([
   "esri/geometry/Point",
   "esri/Graphic",
   "esri/layers/GraphicsLayer",
+  "esri/layers/FeatureLayer",
 ], function (
   esriConfig,
   Map,
@@ -18,17 +19,26 @@ require([
   Point,
   Graphic,
   GraphicsLayer,
+  FeatureLayer,
 ) {
   // Set your API key
   esriConfig.apiKey =
     "AAPTaJYkH5ASSLWvdKQWeQ8cs5Q..JmR5E1jJCVswiUjDOD07Wfgyesr87fOEEparDrWmYzJRv8_mIZXixUdW6w1OxvvckCGEgkPO-zZvE8B1QkYxJiSujtj3D0k2rzxDdqW1XZyV1W_cjxWl3UKfyxiNbi13vIjFxMZxZIs9AeCRiRXtxxG-yMJa6kKzD9NkU6qh9bsoyG8UwbEKJfL59DitldgFK8GT9idjo5Hj2OBB-jrWDdIq8NDQIMJCmPCy4nxlgwr8UABdhQKrPrebGBU.AT1_U02ceave";
 
-  //   // Create a map with a topographic basemap
-  //   const map = new Map({
-  //     basemap: "arcgis-streets",
-  //   });
+  // // Create a map with a topographic basemap
+  // const map = new Map({
+  //   basemap: "arcgis-streets",
+  // });
 
-  const webmap = new WebMap({
+  // //Layer from feature service
+  // const layer = new FeatureLayer({
+  //   url: "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/PHL_Boundaries_view/FeatureServer",
+  // });
+  // // Add to map
+  // map.add(layer);
+
+  // layer from itemID
+  const map = new WebMap({
     portalItem: {
       id: "391a540d56b64375a0f76d4778d1880a",
       // id: "e691172598f04ea8881cd2a4adaa45ba",
@@ -39,7 +49,7 @@ require([
   // Create a view and link it to the map
   const view = new MapView({
     container: "viewDiv", // ID of the HTML element
-    map: webmap, // Reference to the map
+    map: map, // Reference to the map
     center: [121.894019, 14.359301], // Longitude, Latitude
     zoom: 5, // Zoom level
   });
@@ -75,7 +85,7 @@ require([
   // getting the layername
   view.when(() => {
     // when to make sure webmap is fully loaded
-    webmap.layers.forEach((layer) => {
+    map.layers.forEach((layer) => {
       console.log(layer.title);
       let option = document.createElement("option");
       option.textContent = layer.title;
@@ -87,8 +97,10 @@ require([
   let lyrList = document.getElementById("layerList");
   view.ui.add(lyrList, "top-right");
 
+  /*
   const graphicsLayer = new GraphicsLayer();
   view.map.add(graphicsLayer);
+
 
   // creating point geometry
   const point = new Point({
@@ -106,4 +118,21 @@ require([
   });
 
   graphicsLayer.add(pointGraphic);
+  */
+
+  // create Query for the layer
+  map.when(() => {
+    // wait for the map to be fully loaded
+    const layer = map.layers.find((layer) => layer.type === "feature");
+    let query = layer.createQuery();
+
+    // define the parameters for the query
+    query.where = "1=1";
+    query.outFields = ["*"];
+    query.returnGeometry = true;
+    // execute the query
+    layer.queryFeatures(query).then((result) => {
+      console.log("Features found:", result);
+    });
+  });
 });
