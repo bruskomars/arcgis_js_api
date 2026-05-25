@@ -5,7 +5,20 @@ require([
   "esri/WebMap",
   "esri/widgets/Legend",
   "esri/widgets/LayerList",
-], function (esriConfig, Map, MapView, WebMap, Legend, LayerList) {
+  "esri/geometry/Point",
+  "esri/Graphic",
+  "esri/layers/GraphicsLayer",
+], function (
+  esriConfig,
+  Map,
+  MapView,
+  WebMap,
+  Legend,
+  LayerList,
+  Point,
+  Graphic,
+  GraphicsLayer,
+) {
   // Set your API key
   esriConfig.apiKey =
     "AAPTaJYkH5ASSLWvdKQWeQ8cs5Q..JmR5E1jJCVswiUjDOD07Wfgyesr87fOEEparDrWmYzJRv8_mIZXixUdW6w1OxvvckCGEgkPO-zZvE8B1QkYxJiSujtj3D0k2rzxDdqW1XZyV1W_cjxWl3UKfyxiNbi13vIjFxMZxZIs9AeCRiRXtxxG-yMJa6kKzD9NkU6qh9bsoyG8UwbEKJfL59DitldgFK8GT9idjo5Hj2OBB-jrWDdIq8NDQIMJCmPCy4nxlgwr8UABdhQKrPrebGBU.AT1_U02ceave";
@@ -17,8 +30,8 @@ require([
 
   const webmap = new WebMap({
     portalItem: {
-      // id: "391a540d56b64375a0f76d4778d1880a",
-      id: "e691172598f04ea8881cd2a4adaa45ba",
+      id: "391a540d56b64375a0f76d4778d1880a",
+      // id: "e691172598f04ea8881cd2a4adaa45ba",
       // id: "f701172599f04ea8781de2a4adzz46ab",
     },
   });
@@ -61,6 +74,7 @@ require([
 
   // getting the layername
   view.when(() => {
+    // when to make sure webmap is fully loaded
     webmap.layers.forEach((layer) => {
       console.log(layer.title);
       let option = document.createElement("option");
@@ -72,4 +86,24 @@ require([
 
   let lyrList = document.getElementById("layerList");
   view.ui.add(lyrList, "top-right");
+
+  const graphicsLayer = new GraphicsLayer();
+  view.map.add(graphicsLayer);
+
+  // creating point geometry
+  const point = new Point({
+    longitude: 120.93151,
+    latitude: 15.07021,
+  });
+  // creating simple point graphics
+  const pointGraphic = new Graphic({
+    geometry: point,
+    symbol: {
+      type: "simple-marker",
+      color: "red",
+      size: "12px",
+    },
+  });
+
+  graphicsLayer.add(pointGraphic);
 });
