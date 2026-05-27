@@ -9,6 +9,7 @@ require([
   "esri/Graphic",
   "esri/layers/GraphicsLayer",
   "esri/layers/FeatureLayer",
+  "esri/widgets/FeatureTable",
 ], function (
   esriConfig,
   Map,
@@ -20,6 +21,7 @@ require([
   Graphic,
   GraphicsLayer,
   FeatureLayer,
+  FeatureTable,
 ) {
   // Set your API key
   esriConfig.apiKey =
@@ -30,21 +32,21 @@ require([
   //   basemap: "arcgis-streets",
   // });
 
-  // //Layer from feature service
-  // const layer = new FeatureLayer({
-  //   url: "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/PHL_Boundaries_view/FeatureServer",
-  // });
-  // // Add to map
-  // map.add(layer);
-
   // layer from itemID
   const map = new WebMap({
     portalItem: {
       id: "391a540d56b64375a0f76d4778d1880a",
       // id: "e691172598f04ea8881cd2a4adaa45ba",
-      // id: "f701172599f04ea8781de2a4adzz46ab",
+      // id: "41281c51f9de45edaf1c8ed44bb10e30",
     },
   });
+
+  // //Layer from feature service
+  const featureLayer = new FeatureLayer({
+    url: "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/PHL_Boundaries_view/FeatureServer",
+  });
+  // Add to map
+  map.add(featureLayer);
 
   // Create a view and link it to the map
   const view = new MapView({
@@ -54,17 +56,10 @@ require([
     zoom: 5, // Zoom level
   });
 
-  view.on("click", function (e) {
-    console.log(e);
-    console.log(e.mapPoint.latitude);
-
-    // $("#xCoords").html(`Latitude: ${e.mapPoint.latitude.toFixed(5)}`);
-    // $("#yCoords").html(`Longitude: ${e.mapPoint.longitude.toFixed(5)}`);
-    if (e.mapPoint) {
-      $("#map_coords").html(
-        `Latitude: ${e.mapPoint.latitude.toFixed(5)} Longitude: ${e.mapPoint.longitude.toFixed(5)}`,
-      );
-    }
+  const table = new FeatureTable({
+    view: view,
+    layer: featureLayer,
+    container: "tableDiv",
   });
 
   // Legend widget
@@ -82,6 +77,7 @@ require([
     "top-right",
   );
 
+  //layer list widget
   // getting the layername
   view.when(() => {
     // when to make sure webmap is fully loaded
@@ -92,6 +88,19 @@ require([
       let select = document.getElementById("layerName");
       select.appendChild(option);
     });
+  });
+
+  view.on("click", function (e) {
+    console.log(e);
+    console.log(e.mapPoint.latitude);
+
+    // $("#xCoords").html(`Latitude: ${e.mapPoint.latitude.toFixed(5)}`);
+    // $("#yCoords").html(`Longitude: ${e.mapPoint.longitude.toFixed(5)}`);
+    if (e.mapPoint) {
+      $("#map_coords").html(
+        `Latitude: ${e.mapPoint.latitude.toFixed(5)} Longitude: ${e.mapPoint.longitude.toFixed(5)}`,
+      );
+    }
   });
 
   let lyrList = document.getElementById("layerList");
@@ -168,4 +177,6 @@ require([
       });
     });
   }
+
+  //
 });
