@@ -121,8 +121,8 @@ require([
   */
 
   // create Query for the layer
+  // wait for the map to be fully loaded
   map.when(() => {
-    // wait for the map to be fully loaded
     const layer = map.layers.find((layer) => layer.type === "feature");
     let query = layer.createQuery();
 
@@ -135,4 +135,6 @@ require([
       console.log("Features found:", result);
     });
   });
+
+  view.ui.add(document.getElementById("queryFeatures"), "top-left");
 });
