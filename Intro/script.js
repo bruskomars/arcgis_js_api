@@ -56,7 +56,7 @@ require([
     zoom: 5, // Zoom level
   });
 
-  const table = new FeatureTable({
+  const featureTable = new FeatureTable({
     view: view,
     layer: featureLayer,
     container: "tableDiv",
@@ -77,18 +77,33 @@ require([
     "top-right",
   );
 
-  //layer list widget
-  // getting the layername
+  //layer list dropdown widget
+  // Build dropdown options once the webmap is loaded
   view.when(() => {
-    // when to make sure webmap is fully loaded
+    const select = document.getElementById("layerName");
     map.layers.forEach((layer) => {
-      console.log(layer.title);
+      // console.log(layer.title);
       let option = document.createElement("option");
       option.textContent = layer.title;
-      let select = document.getElementById("layerName");
+      option.value = layer.id; // use the layer id for lookup
       select.appendChild(option);
     });
+
+    select.addEventListener("change", (e) => {
+      const selectedId = e.target.value;
+      const selectedLayer = map.layers.find((l) => l.id === selectedId);
+
+      if (selectedLayer) {
+        // Switch the FeatureTable to the selected layer
+        featureTable.layer = selectedLayer;
+      } else {
+        console.warn("No layer found for id:", selectedId);
+      }
+    });
   });
+
+  let lyrList = document.getElementById("layerList");
+  view.ui.add(lyrList, "top-left");
 
   view.on("click", function (e) {
     console.log(e);
@@ -102,9 +117,6 @@ require([
       );
     }
   });
-
-  let lyrList = document.getElementById("layerList");
-  view.ui.add(lyrList, "top-right");
 
   /*
   const graphicsLayer = new GraphicsLayer();
