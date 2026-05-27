@@ -120,21 +120,52 @@ require([
   graphicsLayer.add(pointGraphic);
   */
 
-  // create Query for the layer
-  // wait for the map to be fully loaded
-  map.when(() => {
-    const layer = map.layers.find((layer) => layer.type === "feature");
-    let query = layer.createQuery();
-
-    // define the parameters for the query
-    query.where = "1=1";
-    query.outFields = ["*"];
-    query.returnGeometry = true;
-    // execute the query
-    layer.queryFeatures(query).then((result) => {
-      console.log("Features found:", result);
-    });
-  });
-
+  // added input html in map
   view.ui.add(document.getElementById("queryFeatures"), "top-left");
+  document
+    .getElementById("queryBtn")
+    .addEventListener("click", queryFeatureLayer);
+
+  // create Query for the layer
+  function queryFeatureLayer() {
+    // wait for the map to be fully loaded
+    map.when(() => {
+      let featureName = document.getElementById("searchInput").value;
+      // alert(featureName);
+
+      // getting the layers since im using a webmap
+      const layer = map.layers.find((layer) => layer.type === "feature");
+      // layer.fields.forEach((f) => {
+      //   console.log("Field name:", f.name, "Alias:", f.alias, "Type:", f.type);
+      // });
+
+      let query = layer.createQuery();
+
+      // define the parameters for the query
+      query.where = `NAME='${featureName}'`;
+      query.outFields = ["*"];
+      query.returnGeometry = true;
+      // execute the query
+      layer.queryFeatures(query).then((result) => {
+        console.log("Features found:", result);
+
+        // highlight and zoom to result
+        if (result && result.features && result.features.length > 0) {
+          const feature = result.features[0];
+          view.whenLayerView(layer).then((layerView) => {
+            if (layerView.highlightHandle) {
+              layerView.highlightHandle.remove();
+            }
+            // Highlight the feature (default yellow outline)
+            layerView.highlightHandle = layerView.highlight(feature);
+
+            // Zoom to the feature
+            view.goTo(feature.geometry);
+          });
+        } else {
+          alert(`${featureName} not found in Cities Boundaries`);
+        }
+      });
+    });
+  }
 });
