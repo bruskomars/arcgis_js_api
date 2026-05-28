@@ -10,6 +10,7 @@ require([
   "esri/layers/GraphicsLayer",
   "esri/layers/FeatureLayer",
   "esri/widgets/FeatureTable",
+  "esri/widgets/Sketch",
 ], function (
   esriConfig,
   Map,
@@ -22,6 +23,7 @@ require([
   GraphicsLayer,
   FeatureLayer,
   FeatureTable,
+  Sketch,
 ) {
   // Set your API key
   esriConfig.apiKey =
@@ -189,6 +191,18 @@ require([
       });
     });
   }
+
+  // SKETCH WIDGETS
+  let graphicsLayer = new GraphicsLayer({
+    view: view,
+  });
+  let sketch = new Sketch({
+    layer: graphicsLayer,
+    view: view,
+  });
+
+  map.add(graphicsLayer);
+  view.ui.add(sketch, "top-left");
 
   //
 });
