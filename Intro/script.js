@@ -11,6 +11,7 @@ require([
   "esri/layers/FeatureLayer",
   "esri/widgets/FeatureTable",
   "esri/widgets/Sketch",
+  "esri/widgets/Search",
 ], function (
   esriConfig,
   Map,
@@ -24,6 +25,7 @@ require([
   FeatureLayer,
   FeatureTable,
   Sketch,
+  Search,
 ) {
   // Set your API key
   esriConfig.apiKey =
@@ -197,5 +199,33 @@ require([
   // map.add(graphicsLayer);
   view.ui.add(sketch, "top-left");
 
-  //
+  // ESRI SEARCH WIDGET
+  view.when(() => {
+    // Collect all feature layers in the WebMap (including the one you added)
+    const featureLayers = map.layers.filter((l) => l.type === "feature");
+
+    // Build search sources from those layers
+    const sources = featureLayers.map((layer) => {
+      return {
+        layer: layer,
+        searchFields: ["NAME"],
+        exactMatch: false,
+        maxResults: 6,
+        maxSuggestions: 6,
+        suggestionsEnabled: true,
+        minSuggestCharacters: 0,
+      };
+    });
+    const searchWidget = new Search({
+      view: view,
+      sources: sources,
+    });
+
+    view.ui.add(searchWidget, {
+      position: "top-left",
+      index: 2,
+    });
+  });
+
+  ////////////
 });
