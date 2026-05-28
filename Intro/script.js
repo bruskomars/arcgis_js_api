@@ -72,12 +72,10 @@ require([
   view.ui.add(legendWidget, "bottom-right");
 
   // layer list widget
-  view.ui.add(
-    new LayerList({
-      view: view,
-    }),
-    "top-right",
-  );
+  ((layers_list = new LayerList({
+    view: view,
+  })),
+    view.ui.add(layers_list, "top-right"));
 
   //layer list dropdown widget
   // Build dropdown options once the webmap is loaded
@@ -111,37 +109,12 @@ require([
     console.log(e);
     console.log(e.mapPoint.latitude);
 
-    // $("#xCoords").html(`Latitude: ${e.mapPoint.latitude.toFixed(5)}`);
-    // $("#yCoords").html(`Longitude: ${e.mapPoint.longitude.toFixed(5)}`);
     if (e.mapPoint) {
       $("#map_coords").html(
         `Latitude: ${e.mapPoint.latitude.toFixed(5)} Longitude: ${e.mapPoint.longitude.toFixed(5)}`,
       );
     }
   });
-
-  /*
-  const graphicsLayer = new GraphicsLayer();
-  view.map.add(graphicsLayer);
-
-
-  // creating point geometry
-  const point = new Point({
-    longitude: 120.93151,
-    latitude: 15.07021,
-  });
-  // creating simple point graphics
-  const pointGraphic = new Graphic({
-    geometry: point,
-    symbol: {
-      type: "simple-marker",
-      color: "red",
-      size: "12px",
-    },
-  });
-
-  graphicsLayer.add(pointGraphic);
-  */
 
   // added input html in map
   view.ui.add(document.getElementById("queryFeatures"), "top-left");
@@ -174,24 +147,33 @@ require([
           .queryFeatures(query)
           .then((result) => {
             console.log("Features found:", result);
+            layer.visible = true;
 
             // highlight and zoom to result
             if (result && result.features && result.features.length > 0) {
-              layer.visible = true;
-              const feature = result.features[0];
-              view.whenLayerView(layer).then((layerView) => {
-                if (layerView.highlightHandle) {
-                  layerView.highlightHandle.remove();
-                }
-                // Highlight the feature (default yellow outline)
-                layerView.highlightHandle = layerView.highlight(feature);
-
-                // Zoom to the feature
-                view.goTo(feature.geometry);
+              const graphicLayerResult = new GraphicsLayer({
+                title: `Query Result: ${featureName}`,
               });
+
+              result.features.forEach((f) => {
+                const graphic = new Graphic({
+                  geometry: f.geometry,
+                  attributes: f.attributes,
+                  symbol: {
+                    type: "simple-fill", // adjust depending on geometry type
+                    color: [255, 0, 0, 0.2],
+                    outline: {
+                      color: [255, 0, 0],
+                      width: 2,
+                    },
+                  },
+                });
+                graphicLayerResult.add(graphic);
+              });
+              map.add(graphicLayerResult);
+              view.goTo(result.features.map((f) => f.geometry));
             } else {
               layer.visible = false;
-              //alert(`${featureName} not found in Cities Boundaries`);
             }
           })
           .catch((error) => {
